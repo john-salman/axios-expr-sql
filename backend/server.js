@@ -10,11 +10,11 @@ app.use(cors());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.get('/', (req, res) => {
-    dbConnection.query('SELECT * FROM test_table;', (error, results) => {
+    dbConnection.query('CALL getAll();', (error, results) => {
         if (error) {
             console.log(`Error: ${error}`);
         } else {
-            res.send(results);
+            res.send(results[0]);
         }
     });
 });
@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 app.post('/new/:name1/:name2', (req, res) => {
     let name1 = req.params.name1;
     let name2 = req.params.name2;
-    let query = 'INSERT INTO test_table (name1, name2) VALUES (?, ?);';
+    let query = 'CALL testInsert(?, ?);';
     dbConnection.query({
         sql: query,
         values: [name1, name2]
@@ -36,11 +36,11 @@ app.post('/new/:name1/:name2', (req, res) => {
 });
 
 app.post('/delete/:id', (req, res) => {
-    console.log("Hit id delete");
-   let query = 'DELETE FROM test_table WHERE id = ?;';
+    let id = req.params.id;
+    let query = 'CALL testDelete(?);';
     dbConnection.query({
         sql: query,
-        values: [req.params.id]
+        values: [id]
     }, error => {
         if (error) {
             console.log(`Error: ${error}`);
